@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   },
   cadastrarBtn: {
     paddingHorizontal:10,
-    paddingTop: 180
+    paddingTop: 100,
   }
 
 });
