@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Button, FlatList, Image, ImageBackground, StyleSheet, Text, TextInput, View } from 'react-native';
 
 const DATA = [
@@ -19,9 +20,34 @@ const DATA = [
   {
     capa: 'https://a.ltrbxd.com/resized/sm/upload/5e/pw/vs/km/8CHJcVc5IGXS1sC5DyjeMwTDEQH-0-1000-0-1500-crop.jpg?v=ab64d75800', titulo: 'Fragmentado', genero: 'Thriller', duracao: '143 mins', classificacao: 'A14'
   },
+  {
+    capa: 'https://a.ltrbxd.com/resized/sm/upload/85/io/38/dz/vfzE3pjE5G7G7kcZWrA3fnbZo7V-0-1000-0-1500-crop.jpg?v=0d5de70f0d', titulo: 'Blade Runner', genero: 'Ficção Científica', duracao: '118 mins', classificacao: 'A14'
+  },
+  {
+    capa: 'https://a.ltrbxd.com/resized/film-poster/8/0/0/8/5/8/800858-joker-folie-a-deux-0-1000-0-1500-crop.jpg?v=a4bf0389e2', titulo: 'Joker: Folie à Deux', genero: 'Drama', duracao: '138 mins', classificacao: 'A16'
+  },
+  {
+    capa: 'https://a.ltrbxd.com/resized/sm/upload/5b/u9/av/il/ecoY7zJL6Ub3URP1oPhPfGflEjV-0-1000-0-1500-crop.jpg?v=8126850315', titulo: 'Psicopata Americano', genero: 'Thriller', duracao: '102 mins', classificacao: 'A18'
+  },
+  {
+    capa: 'https://a.ltrbxd.com/resized/film-poster/4/2/6/4/0/6/426406-parasite-0-1000-0-1500-crop.jpg?v=8f5653f710', titulo: 'Parasita', genero: 'Drama', duracao: '133 mins', classificacao: 'A16'
+  },
 ]
 
 export default function HomeScreen() {
+  const [search, setSearch] = useState('');
+  const [filteredData, setfilteredData] = useState(DATA);
+
+  const handleSearch = (text: string) => {
+    setSearch(text);
+    if (text) {
+      const newData = DATA.filter(item => item.titulo.toLowerCase().includes(text.toLowerCase()))
+      setfilteredData(newData);
+    } else {
+      setfilteredData(DATA);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -41,19 +67,18 @@ export default function HomeScreen() {
       <View style={styles.containerPesquisa}>
         <TextInput
           inputMode='text'
+          value={search}
           placeholder='Busque por um filme'
           placeholderTextColor={'#7c7c7c'}
           style={styles.inputEstilo}
+          onChangeText={handleSearch}
         />
-        <Button
-          title='Buscar'
-          color={'#b36736'}
-        />
+        
       </View>
 
       <FlatList
         style={styles.containerLista}
-        data={DATA}
+        data={filteredData}
         renderItem={({ item }) => (
           <View style={styles.itemLista}>
             <Image
@@ -117,7 +142,7 @@ const styles = StyleSheet.create({
     height: 40,
     color: '#000',
     backgroundColor: '#d9d9d9',
-    width: '80%',
+    width: '100%',
     fontSize: 20,
     paddingLeft: 10
   },
