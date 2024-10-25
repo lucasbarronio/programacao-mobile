@@ -1,52 +1,29 @@
-import { useState } from 'react';
-import { Button, FlatList, Image, ImageBackground, StyleSheet, Text, TextInput, View } from 'react-native';
-
-const DATA = [
-  {
-    capa: 'https://a.ltrbxd.com/resized/sm/upload/q9/3o/ng/om/obhM86qyv8RsE69XSMTtT9FdE0b-0-1000-0-1500-crop.jpg?v=1403a5e003', titulo: 'Vertigo', genero: 'Romance', duracao: '129 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/sm/upload/h6/yo/p7/1t/ran-0-1000-0-1500-crop.jpg?v=3cabb176dc', titulo: 'Ran', genero: 'História', duracao: '168 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/film-poster/5/1/4/4/5/51445-aliens-0-1000-0-1500-crop.jpg?v=6c62918bdd', titulo: 'Aliens', genero: 'Ficção Científica', duracao: '154 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/film-poster/7/8/4/3/2/8/784328-oppenheimer-0-1000-0-1500-crop.jpg?v=e3c6e7a32c', titulo: 'Oppenheimer', genero: 'História', duracao: '167 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/film-poster/5/1/4/0/7/51407-the-sixth-sense-0-1000-0-1500-crop.jpg?v=ab482dfeb6', titulo: 'O Sexto Sentido', genero: 'Terror', duracao: '173 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/sm/upload/5e/pw/vs/km/8CHJcVc5IGXS1sC5DyjeMwTDEQH-0-1000-0-1500-crop.jpg?v=ab64d75800', titulo: 'Fragmentado', genero: 'Thriller', duracao: '143 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/sm/upload/85/io/38/dz/vfzE3pjE5G7G7kcZWrA3fnbZo7V-0-1000-0-1500-crop.jpg?v=0d5de70f0d', titulo: 'Blade Runner', genero: 'Ficção Científica', duracao: '118 mins', classificacao: 'A14'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/film-poster/8/0/0/8/5/8/800858-joker-folie-a-deux-0-1000-0-1500-crop.jpg?v=a4bf0389e2', titulo: 'Joker: Folie à Deux', genero: 'Drama', duracao: '138 mins', classificacao: 'A16'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/sm/upload/5b/u9/av/il/ecoY7zJL6Ub3URP1oPhPfGflEjV-0-1000-0-1500-crop.jpg?v=8126850315', titulo: 'Psicopata Americano', genero: 'Thriller', duracao: '102 mins', classificacao: 'A18'
-  },
-  {
-    capa: 'https://a.ltrbxd.com/resized/film-poster/4/2/6/4/0/6/426406-parasite-0-1000-0-1500-crop.jpg?v=8f5653f710', titulo: 'Parasita', genero: 'Drama', duracao: '133 mins', classificacao: 'A16'
-  },
-]
+import React, { useState, useEffect } from 'react';
+import { Button, FlatList, Image, ImageBackground, StyleSheet, Text, RefreshControl, TextInput, View } from 'react-native';
 
 export default function HomeScreen() {
-  const [search, setSearch] = useState('');
-  const [filteredData, setfilteredData] = useState(DATA);
+  const [DATA, setData] = useState<any[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const handleSearch = (text: string) => {
-    setSearch(text);
-    if (text) {
-      const newData = DATA.filter(item => item.titulo.toLowerCase().includes(text.toLowerCase()))
-      setfilteredData(newData);
-    } else {
-      setfilteredData(DATA);
+  useEffect(() => {
+    fetchData();
+  }, [])
+
+  const fetchData = async () => {
+    try {
+      const response = await fetch(`${process.env.API_URL}/filmes`);
+      const json = await response.json();
+      setData(json);
+    } catch (error) {
+      console.error(error);
     }
-  };
+  }
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await fetchData();
+    setRefreshing(false);
+  }
 
   return (
     <View style={styles.container}>
@@ -67,23 +44,21 @@ export default function HomeScreen() {
       <View style={styles.containerPesquisa}>
         <TextInput
           inputMode='text'
-          value={search}
           placeholder='Busque por um filme'
           placeholderTextColor={'#7c7c7c'}
           style={styles.inputEstilo}
-          onChangeText={handleSearch}
         />
-        
+
       </View>
 
       <FlatList
         style={styles.containerLista}
-        data={filteredData}
+        data={DATA}
         renderItem={({ item }) => (
           <View style={styles.itemLista}>
             <Image
               style={styles.previewFilme}
-              source={{ uri: item.capa }}
+              source={item.capa ? { uri: item.capa } : require('@/assets/images/noImage.jpg')}
             />
             <View style={styles.dadosFilme}>
               <Text style={styles.cabecalhoItem}>{item.titulo}</Text>
@@ -94,7 +69,9 @@ export default function HomeScreen() {
             </View>
           </View>
         )}
-        keyExtractor={item => item.titulo}
+        ListEmptyComponent={<Text>Nenhum dado encontrado.</Text>}
+        keyExtractor={item => item.id}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
 
     </View>
