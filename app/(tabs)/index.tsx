@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, FlatList, Image, ImageBackground, StyleSheet, Text, RefreshControl, TextInput, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import { FlatList, Image, ImageBackground, StyleSheet, Text, RefreshControl, TextInput, View, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
   const [DATA, setData] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [filteredData, setFilteredData] = useState(DATA);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     fetchData();
@@ -11,9 +14,10 @@ export default function HomeScreen() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch(`${process.env.API_URL}/filmes`);
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/filmes`);
       const json = await response.json();
       setData(json);
+      setFilteredData(json);
     } catch (error) {
       console.error(error);
     }
@@ -25,6 +29,22 @@ export default function HomeScreen() {
     setRefreshing(false);
   }
 
+  const handleSearch = (text: string) => {
+    setSearch(text);
+    filterData(text);
+  }
+
+  const filterData = (text: string) => {
+    if (text) {
+      const newData = DATA.filter(item =>
+        item.titulo.toLowerCase().includes(text.toLowerCase())
+      );
+      setFilteredData(newData);
+    } else {
+      setFilteredData(DATA);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -33,27 +53,26 @@ export default function HomeScreen() {
         <View style={styles.containerCabecalho}>
           <Text style={styles.cabecalho}>Filmes</Text>
         </View>
+        <TouchableOpacity style={styles.botaoMenu}>
+          <Ionicons name="menu" size={24} color="white" />
+        </TouchableOpacity>
       </ImageBackground>
 
-      <View style={styles.cadastroRedirect}>
-        <Button
-          title='Cadastros'
-          color={'#005671'}
-        />
-      </View>
       <View style={styles.containerPesquisa}>
         <TextInput
           inputMode='text'
+          value={search}
           placeholder='Busque por um filme'
           placeholderTextColor={'#7c7c7c'}
           style={styles.inputEstilo}
+          onChangeText={handleSearch}
         />
 
       </View>
 
       <FlatList
         style={styles.containerLista}
-        data={DATA}
+        data={filteredData}
         renderItem={({ item }) => (
           <View style={styles.itemLista}>
             <Image
@@ -64,15 +83,22 @@ export default function HomeScreen() {
               <Text style={styles.cabecalhoItem}>{item.titulo}</Text>
               <View style={styles.footerFilme}>
                 <Text style={styles.textoItem}>{item.genero}</Text>
-                <Text style={styles.subtextoItem}>{item.duracao} • {item.classificacao}</Text>
+                <View style={styles.iconTextContainer}>
+                  <Ionicons name="time-outline" size={17} color="#a9bcc2" />
+                  <Text style={styles.subtextoItem}>{item.duracao}min </Text>
+                  <Ionicons name="ban-outline" size={16} color="#a9bcc2" />
+                  <Text style={styles.subtextoItem}>{item.classificacao}</Text>
+                </View>
               </View>
             </View>
           </View>
         )}
-        ListEmptyComponent={<Text>Nenhum dado encontrado.</Text>}
+        ListEmptyComponent={<Text style={styles.textoItem}>Nenhum dado encontrado.</Text>}
         keyExtractor={item => item.id}
-        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
       />
+      <TouchableOpacity style={styles.botaoRefresh} onPress={onRefresh}>
+        <Ionicons name="refresh" size={24} color="white" />
+      </TouchableOpacity>
 
     </View>
   );
@@ -95,6 +121,7 @@ const styles = StyleSheet.create({
     textShadowColor: '#000',
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 1,
+    letterSpacing: 5
   },
   containerCabecalho: {
     flex: 1,
@@ -109,11 +136,13 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontSize: 24,
     fontWeight: '600',
+    letterSpacing: 1
   },
   subtextoItem: {
     color: '#a9bcc2',
     fontSize: 16,
     fontWeight: '400',
+    verticalAlign: 'middle'
   },
   inputEstilo: {
     height: 40,
@@ -131,7 +160,8 @@ const styles = StyleSheet.create({
   containerPesquisa: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    padding: 10,
+    paddingVertical: 20,
+    paddingHorizontal: 10,
     paddingBottom: 0
   },
   itemLista: {
@@ -153,12 +183,40 @@ const styles = StyleSheet.create({
   },
   textoItem: {
     color: '#a9bcc2',
-    fontSize: 18,
-    fontWeight: '500'
+    fontSize: 20,
+    fontWeight: '500',
+    verticalAlign: 'middle'
   },
   footerFilme: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center'
+  },
+  iconTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  botaoRefresh: {
+    position: 'absolute',
+    right: 20,
+    bottom: 30,
+    width: 60,
+    height: 60,
+    backgroundColor: '#A96036',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  botaoMenu: {
+    position: 'absolute',
+    right: 20,
+    top: 50,
+    width: 60,
+    height: 60,
+    backgroundColor: '#A96036',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   }
 });

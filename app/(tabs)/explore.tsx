@@ -1,6 +1,36 @@
-import { Button, ImageBackground, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useState } from 'react';
+import { ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
+  const [titulo, setTitulo] = useState('');
+  const [genero, setGenero] = useState('');
+  const [duracao, setDuracao] = useState('');
+  const [classificacao, setClassificacao] = useState('');
+
+  const handleSubmit = async () => {
+    try {
+      await fetch(`${process.env.EXPO_PUBLIC_API_URL}/filmes`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "titulo": titulo,
+            "genero": genero,
+            "duracao": duracao,
+            "classificacao": classificacao,
+          })
+        }
+      )
+      setTitulo('');
+      setGenero('');
+      setDuracao('');
+      setClassificacao('');
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -17,6 +47,8 @@ export default function HomeScreen() {
           <TextInput
             inputMode='text'
             style={styles.inputEstilo}
+            value={titulo}
+            onChangeText={setTitulo}
           />
         </View>
         <View style={styles.inputBox}>
@@ -24,6 +56,8 @@ export default function HomeScreen() {
           <TextInput
             inputMode='text'
             style={styles.inputEstilo}
+            value={genero}
+            onChangeText={setGenero}
           />
         </View>
         <View style={styles.inputBox}>
@@ -31,6 +65,8 @@ export default function HomeScreen() {
           <TextInput
             inputMode='text'
             style={styles.inputEstilo}
+            value={duracao}
+            onChangeText={setDuracao}
           />
         </View>
         <View style={styles.inputBox}>
@@ -38,16 +74,17 @@ export default function HomeScreen() {
           <TextInput
             inputMode='text'
             style={styles.inputEstilo}
+            value={classificacao}
+            onChangeText={setClassificacao}
           />
         </View>
       </View>
-      <View style={styles.cadastrarBtn}>
-        <Button
-          title='Cadastrar'
-          color={'#005671'}
-        />
-      </View>
-    </View >
+      <TouchableOpacity
+        style={styles.cadastrarBtn}
+        onPress={handleSubmit}>
+        <Text style={styles.cadastrarText}>Cadastrar</Text>
+      </TouchableOpacity>
+    </View>
   );
 }
 
@@ -68,6 +105,7 @@ const styles = StyleSheet.create({
     textShadowColor: '#000',
     textShadowOffset: { width: 3, height: 3 },
     textShadowRadius: 1,
+    letterSpacing: 5
   },
   containerMain: {
     alignItems: 'center',
@@ -83,14 +121,15 @@ const styles = StyleSheet.create({
     color: '#FFF',
     paddingBottom: 1,
     paddingLeft: 3,
-    fontWeight: 'bold'
+    fontWeight: 'bold',
+    letterSpacing: 2
   },
   inputEstilo: {
     height: 40,
     padding: 5,
     color: '#000',
     backgroundColor: '#d9d9d9',
-    fontSize: 20
+    fontSize: 20,
   },
   inputBox: {
     paddingBottom: 30,
@@ -102,8 +141,16 @@ const styles = StyleSheet.create({
     marginLeft: 20,
   },
   cadastrarBtn: {
-    paddingHorizontal:10,
-    paddingTop: 100,
+    backgroundColor: '#2d6d7c',
+    padding: 10,
+    marginHorizontal: 20,
+    alignItems: 'center',
+  },
+  cadastrarText: {
+    color: '#FFF',
+    fontSize: 20,
+    fontWeight: 'bold',
+    letterSpacing: 5
   }
 
 });
