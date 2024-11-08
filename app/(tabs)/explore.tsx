@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
 
 export default function HomeScreen() {
@@ -6,6 +6,18 @@ export default function HomeScreen() {
   const [genero, setGenero] = useState('');
   const [duracao, setDuracao] = useState('');
   const [classificacao, setClassificacao] = useState('');
+  const [capa, setCapa] = useState('');
+
+  const fetchCapa = async () => {
+    if (titulo.trim() === '') return;
+    try {
+      const response = await fetch(`http://www.omdbapi.com/?apikey=${process.env.EXPO_PUBLIC_OMDB_KEY}&t=${titulo}`.replaceAll(/\s/g, '+'));
+      const json = await response.json();
+      setCapa(json.Poster);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -20,6 +32,7 @@ export default function HomeScreen() {
             "genero": genero,
             "duracao": duracao,
             "classificacao": classificacao,
+            "capa": capa
           })
         }
       )
@@ -27,6 +40,7 @@ export default function HomeScreen() {
       setGenero('');
       setDuracao('');
       setClassificacao('');
+      setCapa('');
     } catch (error) {
       console.error(error);
     }
@@ -49,6 +63,7 @@ export default function HomeScreen() {
             style={styles.inputEstilo}
             value={titulo}
             onChangeText={setTitulo}
+            onBlur={fetchCapa}
           />
         </View>
         <View style={styles.inputBox}>
