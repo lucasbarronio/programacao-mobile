@@ -1,5 +1,8 @@
-import { useState, useEffect } from 'react';
-import { ImageBackground, StyleSheet, Text, TextInput, View, TouchableOpacity } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, View } from 'react-native';
+import Header from '@/components/Header';
+import InputBox from '@/components/InputBox';
+import SubmitButton from '@/components/SubmitButton';
 
 export default function HomeScreen() {
   const [titulo, setTitulo] = useState('');
@@ -47,58 +50,38 @@ export default function HomeScreen() {
   }
   return (
     <View style={styles.container}>
-      <ImageBackground
-        style={styles.capa}
-        source={require('@/assets/images/cadastroBanner.jpg')}>
-        <View style={styles.containerCabecalho}>
-          <Text style={styles.cabecalho}>Cadastro</Text>
-        </View>
-      </ImageBackground >
+      <Header
+        titulo='Cadastro'
+        image={require('@/assets/images/cadastroBanner.jpg')}
+      />
 
       <View style={styles.containerMain}>
-        <View style={styles.inputBox}>
-          <Text style={styles.inputLabel}>Título</Text>
-          <TextInput
-            inputMode='text'
-            style={styles.inputEstilo}
-            value={titulo}
-            onChangeText={setTitulo}
-            onBlur={fetchCapa}
-          />
-        </View>
-        <View style={styles.inputBox}>
-          <Text style={styles.inputLabel}>Gênero</Text>
-          <TextInput
-            inputMode='text'
-            style={styles.inputEstilo}
-            value={genero}
-            onChangeText={setGenero}
-          />
-        </View>
-        <View style={styles.inputBox}>
-          <Text style={styles.inputLabel}>Duração</Text>
-          <TextInput
-            inputMode='text'
-            style={styles.inputEstilo}
-            value={duracao}
-            onChangeText={setDuracao}
-          />
-        </View>
-        <View style={styles.inputBox}>
-          <Text style={styles.inputLabel}>Classificação</Text>
-          <TextInput
-            inputMode='text'
-            style={styles.inputEstilo}
-            value={classificacao}
-            onChangeText={setClassificacao}
-          />
-        </View>
+        <InputBox
+          label='Título'
+          valor={titulo}
+          onText={setTitulo}
+          handleCapa={fetchCapa}
+        />
+        <InputBox
+          label='Gênero'
+          valor={genero}
+          onText={setGenero}
+        />
+        <InputBox
+          label='Duração'
+          valor={duracao}
+          onText={setDuracao}
+        />
+        <InputBox
+          label='Classificação'
+          valor={classificacao}
+          onText={setClassificacao}
+        />
       </View>
-      <TouchableOpacity
-        style={styles.cadastrarBtn}
-        onPress={handleSubmit}>
-        <Text style={styles.cadastrarText}>Cadastrar</Text>
-      </TouchableOpacity>
+      <SubmitButton
+        label='Cadastrar'
+        onSubmit={handleSubmit}
+      />
     </View>
   );
 }
@@ -109,63 +92,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#232323',
     justifyContent: 'flex-start',
   },
-  capa: {
-    width: '100%',
-    height: 200,
-  },
-  cabecalho: {
-    color: '#fff',
-    fontSize: 60,
-    fontWeight: 'bold',
-    textShadowColor: '#000',
-    textShadowOffset: { width: 3, height: 3 },
-    textShadowRadius: 1,
-    letterSpacing: 5
-  },
   containerMain: {
     alignItems: 'center',
     paddingTop: 40,
     paddingHorizontal: 20
-  },
-  textoLista: {
-    color: '#FFF',
-    fontSize: 15,
-  },
-  inputLabel: {
-    fontSize: 20,
-    color: '#FFF',
-    paddingBottom: 1,
-    paddingLeft: 3,
-    fontWeight: 'bold',
-    letterSpacing: 2
-  },
-  inputEstilo: {
-    height: 40,
-    padding: 5,
-    color: '#000',
-    backgroundColor: '#d9d9d9',
-    fontSize: 20,
-  },
-  inputBox: {
-    paddingBottom: 30,
-    width: '100%'
-  },
-  containerCabecalho: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 20,
-  },
-  cadastrarBtn: {
-    backgroundColor: '#2d6d7c',
-    padding: 10,
-    marginHorizontal: 20,
-    alignItems: 'center',
-  },
-  cadastrarText: {
-    color: '#FFF',
-    fontSize: 20,
-    fontWeight: 'bold',
-    letterSpacing: 5
   }
 
 });

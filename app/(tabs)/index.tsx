@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Ionicons } from '@expo/vector-icons';
-import { FlatList, Image, ImageBackground, StyleSheet, Text, RefreshControl, TextInput, View, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
+import RefreshButton from '@/components/RefreshButton';
+import FilmeItem from '@/components/FilmeItem';
+import SearchInput from '@/components/SearchInput';
+import Header from '@/components/Header';
 
 export default function HomeScreen() {
   const [DATA, setData] = useState<any[]>([]);
@@ -23,7 +26,7 @@ export default function HomeScreen() {
     }
   }
 
-  const onRefresh = async () => {
+  const handleRefresh = async () => {
     setRefreshing(true);
     await fetchData();
     setRefreshing(false);
@@ -52,7 +55,7 @@ export default function HomeScreen() {
       });
 
       if (response.ok) {
-        await onRefresh();
+        await handleRefresh();
       }
     } catch (error) {
       console.error(error);
@@ -61,64 +64,34 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <ImageBackground
-        style={styles.capa}
-        source={require('@/assets/images/listaBanner.jpg')}>
-        <View style={styles.containerCabecalho}>
-          <Text style={styles.cabecalho}>Filmes</Text>
-        </View>
-        <TouchableOpacity style={styles.botaoMenu}>
-          <Ionicons name="menu" size={24} color="white" />
-        </TouchableOpacity>
-      </ImageBackground>
+      <Header
+        titulo='Filmes'
+        image={require('@/assets/images/listaBanner.jpg')}
+      />
 
-      <View style={styles.containerPesquisa}>
-        <TextInput
-          inputMode='text'
-          value={search}
-          placeholder='Busque por um filme'
-          placeholderTextColor={'#7c7c7c'}
-          style={styles.inputEstilo}
-          onChangeText={handleSearch}
-        />
-
-      </View>
+      <SearchInput
+        onSearch={handleSearch}
+        value={search}
+      />
 
       <FlatList
         style={styles.containerLista}
         data={filteredData}
         renderItem={({ item }) => (
-          <View style={styles.itemLista}>
-            <Image
-              style={styles.previewFilme}
-              source={item.capa ? { uri: item.capa } : require('@/assets/images/noImage.jpg')}
-            />
-            <View style={styles.dadosFilme}>
-              <View style={styles.footerFilme}>
-                <Text style={styles.cabecalhoItem}>{item.titulo}</Text>
-                <TouchableOpacity onPress={() => handleDelete(item.id)}>
-                  <Ionicons name="trash-outline" size={24} color="#a96036" />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.footerFilme}>
-                <Text style={styles.textoItem}>{item.genero}</Text>
-                <View style={styles.iconTextContainer}>
-                  <Ionicons name="time-outline" size={17} color="#a9bcc2" />
-                  <Text style={styles.subtextoItem}>{item.duracao}min </Text>
-                  <Ionicons name="ban-outline" size={16} color="#a9bcc2" />
-                  <Text style={styles.subtextoItem}>{item.classificacao}</Text>
-                </View>
-              </View>
-            </View>
-          </View>
+          <FilmeItem
+            id={item.id}
+            titulo={item.titulo}
+            capa={item.capa}
+            genero={item.genero}
+            duracao={item.duracao}
+            classificacao={item.classificacao}
+            onDelete={handleDelete}
+          />
         )}
-        ListEmptyComponent={<Text style={styles.textoItem}>Nenhum dado encontrado.</Text>}
+        ListEmptyComponent={<Text>Nenhum dado encontrado.</Text>}
         keyExtractor={item => item.id}
       />
-      <TouchableOpacity style={styles.botaoRefresh} onPress={onRefresh}>
-        <Ionicons name="refresh" size={24} color="white" />
-      </TouchableOpacity>
-
+      <RefreshButton onRefresh={handleRefresh} />
     </View>
   );
 }
@@ -129,114 +102,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#232323',
     justifyContent: 'flex-start'
   },
-  capa: {
-    width: '100%',
-    height: 200,
-  },
-  cabecalho: {
-    color: '#fff',
-    fontSize: 60,
-    fontWeight: 'bold',
-    textShadowColor: '#000',
-    textShadowOffset: { width: 3, height: 3 },
-    textShadowRadius: 1,
-    letterSpacing: 5
-  },
-  containerCabecalho: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: 20
-  },
   containerLista: {
     paddingHorizontal: 10,
     marginTop: 20,
     paddingBottom: 80
-  },
-  cabecalhoItem: {
-    color: '#FFF',
-    fontSize: 24,
-    fontWeight: '600',
-    letterSpacing: 1
-  },
-  subtextoItem: {
-    color: '#a9bcc2',
-    fontSize: 16,
-    fontWeight: '400',
-    verticalAlign: 'middle'
-  },
-  inputEstilo: {
-    height: 40,
-    color: '#000',
-    backgroundColor: '#d9d9d9',
-    width: '100%',
-    fontSize: 20,
-    paddingLeft: 10
   },
   cadastroRedirect: {
     paddingHorizontal: 10,
     paddingTop: 15,
     paddingBottom: 0,
   },
-  containerPesquisa: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 20,
-    paddingHorizontal: 10,
-    paddingBottom: 0
-  },
-  itemLista: {
-    backgroundColor: '#121212',
-    flexDirection: 'row',
-    marginBottom: 14,
-    height: 90,
-  },
-  previewFilme: {
-    width: 60,
-    height: 90,
-  },
-  dadosFilme: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-    width: '85%',
-    flexDirection: 'column',
-    justifyContent: 'space-between'
-  },
-  textoItem: {
-    color: '#a9bcc2',
-    fontSize: 20,
-    fontWeight: '500',
-    verticalAlign: 'middle'
-  },
-  footerFilme: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  iconTextContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  botaoRefresh: {
-    position: 'absolute',
-    right: 20,
-    bottom: 30,
-    width: 60,
-    height: 60,
-    backgroundColor: '#A96036',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  botaoMenu: {
-    position: 'absolute',
-    right: 20,
-    top: 50,
-    width: 60,
-    height: 60,
-    backgroundColor: '#A96036',
-    borderRadius: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  }
 });
