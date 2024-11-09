@@ -45,6 +45,20 @@ export default function HomeScreen() {
     }
   }
 
+  const handleDelete = async (id: string) => {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/filmes/${id}`, {
+        method: 'DELETE'
+      });
+
+      if (response.ok) {
+        await onRefresh();
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <ImageBackground
@@ -80,7 +94,12 @@ export default function HomeScreen() {
               source={item.capa ? { uri: item.capa } : require('@/assets/images/noImage.jpg')}
             />
             <View style={styles.dadosFilme}>
-              <Text style={styles.cabecalhoItem}>{item.titulo}</Text>
+              <View style={styles.footerFilme}>
+                <Text style={styles.cabecalhoItem}>{item.titulo}</Text>
+                <TouchableOpacity onPress={() => handleDelete(item.id)}>
+                  <Ionicons name="trash-outline" size={24} color="#a96036" />
+                </TouchableOpacity>
+              </View>
               <View style={styles.footerFilme}>
                 <Text style={styles.textoItem}>{item.genero}</Text>
                 <View style={styles.iconTextContainer}>
@@ -130,7 +149,8 @@ const styles = StyleSheet.create({
   },
   containerLista: {
     paddingHorizontal: 10,
-    marginVertical: 20
+    marginTop: 20,
+    paddingBottom: 80
   },
   cabecalhoItem: {
     color: '#FFF',
