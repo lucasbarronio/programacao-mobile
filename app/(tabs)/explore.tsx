@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Alert, StyleSheet, View } from 'react-native';
 import Header from '@/components/Header';
 import InputBox from '@/components/InputBox';
 import SubmitButton from '@/components/SubmitButton';
@@ -39,6 +39,7 @@ export default function HomeScreen() {
           })
         }
       )
+      Alert.alert('Sucesso!', `${titulo} cadastrado com sucesso!`)
       setTitulo('');
       setGenero('');
       setDuracao('');

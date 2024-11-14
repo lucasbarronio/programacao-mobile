@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FlatList, StyleSheet, Text, View } from 'react-native';
+import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
 import RefreshButton from '@/components/RefreshButton';
 import FilmeItem from '@/components/FilmeItem';
 import SearchInput from '@/components/SearchInput';
@@ -16,7 +16,6 @@ export default function HomeScreen() {
     fetchData();
   }, [useFocusEffect(React.useCallback(() => {
     fetchData();
-    console.log('fetching')
   }, []))])
 
   const fetchData = async () => {
@@ -59,6 +58,7 @@ export default function HomeScreen() {
       });
 
       if (response.ok) {
+        Alert.alert('Sucesso!', `Filme excluído com sucesso!`)
         await handleRefresh();
       }
     } catch (error) {
