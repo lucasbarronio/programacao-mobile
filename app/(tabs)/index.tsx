@@ -4,6 +4,7 @@ import RefreshButton from '@/components/RefreshButton';
 import FilmeItem from '@/components/FilmeItem';
 import SearchInput from '@/components/SearchInput';
 import Header from '@/components/Header';
+import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const [DATA, setData] = useState<any[]>([]);
@@ -13,7 +14,10 @@ export default function HomeScreen() {
 
   useEffect(() => {
     fetchData();
-  }, [])
+  }, [useFocusEffect(React.useCallback(() => {
+    fetchData();
+    console.log('fetching')
+  }, []))])
 
   const fetchData = async () => {
     try {
@@ -67,6 +71,7 @@ export default function HomeScreen() {
       <Header
         titulo='Filmes'
         image={require('@/assets/images/listaBanner.jpg')}
+        path={'/(tabs)/explore'}
       />
 
       <SearchInput
@@ -92,7 +97,7 @@ export default function HomeScreen() {
         keyExtractor={item => item.id}
       />
       <RefreshButton onRefresh={handleRefresh} />
-    </View>
+    </View >
   );
 }
 
@@ -100,16 +105,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#232323',
-    justifyContent: 'flex-start'
+    justifyContent: 'flex-start',
   },
   containerLista: {
     paddingHorizontal: 10,
     marginTop: 20,
-    paddingBottom: 80
   },
-  cadastroRedirect: {
-    paddingHorizontal: 10,
-    paddingTop: 15,
-    paddingBottom: 0,
-  },
+  botaoMenu: {
+    position: 'absolute',
+    right: 20,
+    top: 50,
+    width: 60,
+    height: 60,
+    backgroundColor: '#A96036',
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+  }
 });

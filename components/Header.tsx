@@ -1,12 +1,14 @@
 import { Ionicons } from '@expo/vector-icons';
-import { View, ImageBackground, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Link } from 'expo-router';
+import { View, ImageBackground, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 type HeaderProps = {
     titulo: string
     image: any
+    path: any
 }
 
-const Header: React.FC<HeaderProps> = ({ titulo, image }) => {
+const Header: React.FC<HeaderProps> = ({ titulo, image, path }) => {
     return (
         <ImageBackground
             style={styles.capa}
@@ -14,9 +16,11 @@ const Header: React.FC<HeaderProps> = ({ titulo, image }) => {
             <View style={styles.containerCabecalho}>
                 <Text style={styles.cabecalho}>{titulo}</Text>
             </View>
-            <TouchableOpacity style={styles.botaoMenu}>
-                <Ionicons name="menu" size={24} color="white" />
-            </TouchableOpacity>
+            <Link href={{ pathname: path }} style={styles.botaoMenu} asChild>
+                <TouchableOpacity>
+                    <Ionicons name="menu" size={24} color="white" />
+                </TouchableOpacity>
+            </Link>
         </ImageBackground>
     )
 }

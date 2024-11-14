@@ -53,6 +53,7 @@ export default function HomeScreen() {
       <Header
         titulo='Cadastro'
         image={require('@/assets/images/cadastroBanner.jpg')}
+        path={'/(tabs)'}
       />
 
       <View style={styles.containerMain}>
