@@ -1,10 +1,14 @@
-import { useState } from 'react';
-import { Alert, StyleSheet, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { useRouter, useGlobalSearchParams } from 'expo-router';
 import Header from '@/components/Header';
 import InputBox from '@/components/InputBox';
 import SubmitButton from '@/components/SubmitButton';
 
 export default function HomeScreen() {
+  const router = useRouter();
+  const params = useGlobalSearchParams<{ id?: string }>();
+  const [filmeId, setFilmeId] = useState<string | undefined>(params.id);
   const [titulo, setTitulo] = useState('');
   const [genero, setGenero] = useState('');
   const [duracao, setDuracao] = useState('');
@@ -22,69 +26,97 @@ export default function HomeScreen() {
     }
   };
 
-  const handleSubmit = async () => {
-    try {
-      await fetch(`${process.env.EXPO_PUBLIC_API_URL}/filmes`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            "titulo": titulo,
-            "genero": genero,
-            "duracao": duracao,
-            "classificacao": classificacao,
-            "capa": capa
-          })
+  useEffect(() => {
+    if (params.id) {
+      setFilmeId(params.id);
+      const fetchFilme = async () => {
+        try {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_API_URL}/filmes/${params.id}`);
+          if (response.ok) {
+            const filmeDados = await response.json();
+            setTitulo(filmeDados.titulo || '');
+            setGenero(filmeDados.genero || '');
+            setDuracao(filmeDados.duracao || '');
+            setClassificacao(filmeDados.classificacao || '');
+            setCapa(filmeDados.capa || '');
+          }
+        } catch (error) {
+          console.error(error);
         }
-      )
-      Alert.alert('Sucesso!', `${titulo} cadastrado com sucesso!`)
+      };
+      fetchFilme();
+    } else {
+      setFilmeId(undefined);
       setTitulo('');
       setGenero('');
       setDuracao('');
       setClassificacao('');
       setCapa('');
+    };
+  }, [params.id]);
+
+  const handleSubmit = async () => {
+    const method = filmeId ? 'PUT' : 'POST';
+    const url = filmeId ? `${process.env.EXPO_PUBLIC_API_URL}/filmes/${filmeId}` : `${process.env.EXPO_PUBLIC_API_URL}/filmes`
+    try {
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ titulo, genero, duracao, classificacao, capa })
+      });
+      if (response.ok) {
+        setFilmeId(undefined);
+        setTitulo('');
+        setGenero('');
+        setDuracao('');
+        setClassificacao('');
+        setCapa('');
+        router.replace('/(tabs)');
+      }
+
     } catch (error) {
       console.error(error);
     }
   }
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Header
-        titulo='Cadastro'
-        image={require('@/assets/images/cadastroBanner.jpg')}
+        titulo={params.id ? 'Edição' : 'Cadastro'}
+        image={params.id ? require('@/assets/images/editarBanner.jpg') : require('@/assets/images/cadastroBanner.jpg')}
         path={'/(tabs)'}
       />
-
-      <View style={styles.containerMain}>
-        <InputBox
-          label='Título'
-          valor={titulo}
-          onText={setTitulo}
-          handleCapa={fetchCapa}
+      <ScrollView contentContainerStyle={styles.scrollArea}>
+        <View style={styles.containerMain}>
+          <InputBox
+            label='Título'
+            valor={titulo}
+            onText={setTitulo}
+            handleCapa={fetchCapa}
+          />
+          <InputBox
+            label='Gênero'
+            valor={genero}
+            onText={setGenero}
+          />
+          <InputBox
+            label='Duração'
+            valor={duracao}
+            onText={setDuracao}
+          />
+          <InputBox
+            label='Classificação'
+            valor={classificacao}
+            onText={setClassificacao}
+          />
+        </View>
+        <SubmitButton
+          label={params.id ? 'Atualizar' : 'Cadastrar'}
+          onSubmit={handleSubmit}
         />
-        <InputBox
-          label='Gênero'
-          valor={genero}
-          onText={setGenero}
-        />
-        <InputBox
-          label='Duração'
-          valor={duracao}
-          onText={setDuracao}
-        />
-        <InputBox
-          label='Classificação'
-          valor={classificacao}
-          onText={setClassificacao}
-        />
-      </View>
-      <SubmitButton
-        label='Cadastrar'
-        onSubmit={handleSubmit}
-      />
-    </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
 
@@ -96,8 +128,11 @@ const styles = StyleSheet.create({
   },
   containerMain: {
     alignItems: 'center',
-    paddingTop: 40,
-    paddingHorizontal: 20
+    paddingHorizontal: 20,
+  },
+  scrollArea: {
+    paddingTop: 20,
+    paddingBottom: 20
   }
 
 });

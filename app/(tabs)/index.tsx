@@ -1,22 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'expo-router';
+import { useFocusEffect } from '@react-navigation/native';
 import { Alert, FlatList, StyleSheet, Text, View } from 'react-native';
 import RefreshButton from '@/components/RefreshButton';
 import FilmeItem from '@/components/FilmeItem';
 import SearchInput from '@/components/SearchInput';
 import Header from '@/components/Header';
-import { useFocusEffect } from '@react-navigation/native';
 
 export default function HomeScreen() {
   const [DATA, setData] = useState<any[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [filteredData, setFilteredData] = useState(DATA);
   const [search, setSearch] = useState('');
+  const router = useRouter();
 
-  useEffect(() => {
-    fetchData();
-  }, [useFocusEffect(React.useCallback(() => {
-    fetchData();
-  }, []))])
+  useFocusEffect(
+    React.useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   const fetchData = async () => {
     try {
@@ -66,6 +68,14 @@ export default function HomeScreen() {
     }
   }
 
+  const handleEdit = async (id: string) => {
+    try {
+      router.push(`/(tabs)/explore?id=${id}`);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Header
@@ -80,7 +90,8 @@ export default function HomeScreen() {
       />
 
       <FlatList
-        style={styles.containerLista}
+        keyExtractor={item => item.id}
+        contentContainerStyle={styles.containerLista}
         data={filteredData}
         renderItem={({ item }) => (
           <FilmeItem
@@ -91,10 +102,10 @@ export default function HomeScreen() {
             duracao={item.duracao}
             classificacao={item.classificacao}
             onDelete={handleDelete}
+            onEdit={handleEdit}
           />
         )}
         ListEmptyComponent={<Text>Nenhum dado encontrado.</Text>}
-        keyExtractor={item => item.id}
       />
       <RefreshButton onRefresh={handleRefresh} />
     </View >
@@ -109,7 +120,7 @@ const styles = StyleSheet.create({
   },
   containerLista: {
     paddingHorizontal: 10,
-    marginTop: 20,
+    paddingBottom: 120,
   },
   botaoMenu: {
     position: 'absolute',

@@ -10,18 +10,20 @@ type HeaderProps = {
 
 const Header: React.FC<HeaderProps> = ({ titulo, image, path }) => {
     return (
-        <ImageBackground
-            style={styles.capa}
-            source={image}>
-            <View style={styles.containerCabecalho}>
-                <Text style={styles.cabecalho}>{titulo}</Text>
-            </View>
-            <Link href={{ pathname: path }} style={styles.botaoMenu} asChild>
-                <TouchableOpacity>
-                    <Ionicons name="menu" size={24} color="white" />
-                </TouchableOpacity>
-            </Link>
-        </ImageBackground>
+        <View style={{ paddingBottom: 20}}>
+            <ImageBackground
+                style={styles.capa}
+                source={image}>
+                <View style={styles.containerCabecalho}>
+                    <Text style={styles.cabecalho}>{titulo}</Text>
+                </View>
+                <Link href={{ pathname: path }} style={styles.botaoMenu} asChild>
+                    <TouchableOpacity>
+                        <Ionicons name="swap-horizontal-outline" size={24} color="white" />
+                    </TouchableOpacity>
+                </Link>
+            </ImageBackground>
+        </View>
     )
 }
 
@@ -42,7 +44,7 @@ const styles = StyleSheet.create({
     containerCabecalho: {
         flex: 1,
         justifyContent: 'center',
-        marginLeft: 20
+        marginLeft: 20,
     },
     botaoMenu: {
         position: 'absolute',

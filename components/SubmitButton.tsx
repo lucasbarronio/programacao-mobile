@@ -17,7 +17,7 @@ const SubmitButton: React.FC<SubmitButtonProps> = ({ onSubmit, label }) => {
 
 const styles = StyleSheet.create({
     cadastrarBtn: {
-        backgroundColor: '#2d6d7c',
+        backgroundColor: '#859042',
         padding: 10,
         marginHorizontal: 20,
         alignItems: 'center',

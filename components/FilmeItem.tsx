@@ -1,5 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import { StyleSheet, TouchableOpacity, Text, View, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, View, Image, Pressable } from 'react-native';
 
 type FilmeItemProps = {
     id: string,
@@ -9,9 +9,10 @@ type FilmeItemProps = {
     duracao: string,
     classificacao: string,
     onDelete: (id: string) => void;
+    onEdit: (id: string) => void;
 }
 
-const FilmeItem: React.FC<FilmeItemProps> = ({ id, titulo, capa, genero, duracao, classificacao, onDelete }) => {
+const FilmeItem: React.FC<FilmeItemProps> = ({ id, titulo, capa, genero, duracao, classificacao, onDelete, onEdit }) => {
     return (
         <View style={styles.itemLista}>
             <Image
@@ -21,9 +22,14 @@ const FilmeItem: React.FC<FilmeItemProps> = ({ id, titulo, capa, genero, duracao
             <View style={styles.dadosFilme}>
                 <View style={styles.footerFilme}>
                     <Text style={styles.cabecalhoItem}>{titulo}</Text>
-                    <TouchableOpacity onPress={() => onDelete(id)}>
-                        <Ionicons name="trash-outline" size={24} color="#a96036" />
-                    </TouchableOpacity>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <Pressable onPress={() => onEdit(id)}>
+                            <Ionicons name="create-outline" size={24} color="#859042" />
+                        </Pressable>
+                        <TouchableOpacity onPress={() => onDelete(id)}>
+                            <Ionicons name="trash-outline" size={24} color="#a96036" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 <View style={styles.footerFilme}>
                     <Text style={styles.textoItem}>{genero}</Text>
