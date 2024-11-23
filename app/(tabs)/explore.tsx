@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { SafeAreaView, ScrollView, StyleSheet, View } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { ScrollView, StyleSheet, TextInput, View } from 'react-native';
 import { useRouter, useGlobalSearchParams } from 'expo-router';
 import Header from '@/components/Header';
 import InputBox from '@/components/InputBox';
@@ -14,6 +14,11 @@ export default function HomeScreen() {
   const [duracao, setDuracao] = useState('');
   const [classificacao, setClassificacao] = useState('');
   const [capa, setCapa] = useState('');
+  const tituloRef = useRef<TextInput>(null);
+  const generoRef = useRef<TextInput>(null);
+  const duracaoRef = useRef<TextInput>(null);
+  const classificacaoRef = useRef<TextInput>(null);
+  const capaRef = useRef<TextInput>(null);
 
   const fetchCapa = async () => {
     if (titulo.trim() === '') return;
@@ -80,8 +85,15 @@ export default function HomeScreen() {
       console.error(error);
     }
   }
+
+  useEffect(() => {
+    if (tituloRef.current) {
+      tituloRef.current.focus();
+    }
+  });
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         titulo={params.id ? 'Edição' : 'Cadastro'}
         image={params.id ? require('@/assets/images/editarBanner.jpg') : require('@/assets/images/cadastroBanner.jpg')}
@@ -94,29 +106,44 @@ export default function HomeScreen() {
             valor={titulo}
             onText={setTitulo}
             handleCapa={fetchCapa}
+            inputRef={tituloRef}
+            onSubmit={() => generoRef.current?.focus()}
           />
           <InputBox
             label='Gênero'
             valor={genero}
             onText={setGenero}
+            inputRef={generoRef}
+            onSubmit={() => duracaoRef.current?.focus()}
           />
           <InputBox
             label='Duração'
             valor={duracao}
             onText={setDuracao}
+            inputRef={duracaoRef}
+            onSubmit={() => classificacaoRef.current?.focus()}
           />
           <InputBox
             label='Classificação'
             valor={classificacao}
             onText={setClassificacao}
+            inputRef={classificacaoRef}
+            onSubmit={() => capaRef.current?.focus()}
           />
+          {params.id != undefined && (<InputBox
+            label='Capa Personalizada'
+            valor={capa}
+            onText={setCapa}
+            keyType={'url'}
+            inputRef={capaRef}
+          />)}
         </View>
         <SubmitButton
           label={params.id ? 'Atualizar' : 'Cadastrar'}
           onSubmit={handleSubmit}
         />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 

@@ -94,16 +94,19 @@ export default function HomeScreen() {
         contentContainerStyle={styles.containerLista}
         data={filteredData}
         renderItem={({ item }) => (
-          <FilmeItem
-            id={item.id}
-            titulo={item.titulo}
-            capa={item.capa}
-            genero={item.genero}
-            duracao={item.duracao}
-            classificacao={item.classificacao}
-            onDelete={handleDelete}
-            onEdit={handleEdit}
-          />
+          <View>
+            <FilmeItem
+              id={item.id}
+              titulo={item.titulo}
+              capa={item.capa}
+              genero={item.genero}
+              duracao={item.duracao}
+              classificacao={item.classificacao}
+              onDelete={handleDelete}
+              onEdit={handleEdit}
+              onTouch={() => {}}
+            />
+          </View>
         )}
         ListEmptyComponent={<Text>Nenhum dado encontrado.</Text>}
       />

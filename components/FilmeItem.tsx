@@ -1,4 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
+import { useState } from 'react';
 import { StyleSheet, TouchableOpacity, Text, View, Image, Pressable } from 'react-native';
 
 type FilmeItemProps = {
@@ -10,38 +11,49 @@ type FilmeItemProps = {
     classificacao: string,
     onDelete: (id: string) => void;
     onEdit: (id: string) => void;
+    onTouch: () => void;
 }
 
-const FilmeItem: React.FC<FilmeItemProps> = ({ id, titulo, capa, genero, duracao, classificacao, onDelete, onEdit }) => {
+const FilmeItem: React.FC<FilmeItemProps> = ({ id, titulo, capa, genero, duracao, classificacao, onDelete, onEdit, onTouch }) => {
+    const [expanded, setExpanded] = useState(false);
+
+    const onItemPress = () => {
+        setExpanded(!expanded);
+    };
+
     return (
-        <View style={styles.itemLista}>
-            <Image
-                style={styles.previewFilme}
-                source={capa ? { uri: capa } : require('@/assets/images/noImage.jpg')}
-            />
-            <View style={styles.dadosFilme}>
-                <View style={styles.footerFilme}>
+        <TouchableOpacity onPress={onItemPress} style={{ flexDirection: 'column', marginBottom: 10 }}>
+            <View style={styles.itemLista}>
+                <Image
+                    style={styles.previewFilme}
+                    source={capa ? { uri: capa } : require('@/assets/images/noImage.jpg')}
+                />
+                <View style={styles.dadosFilme}>
                     <Text style={styles.cabecalhoItem}>{titulo}</Text>
-                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <Pressable onPress={() => onEdit(id)}>
-                            <Ionicons name="create-outline" size={24} color="#859042" />
-                        </Pressable>
-                        <TouchableOpacity onPress={() => onDelete(id)}>
-                            <Ionicons name="trash-outline" size={24} color="#a96036" />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-                <View style={styles.footerFilme}>
-                    <Text style={styles.textoItem}>{genero}</Text>
-                    <View style={styles.iconTextContainer}>
-                        <Ionicons name="time-outline" size={17} color="#a9bcc2" />
-                        <Text style={styles.subtextoItem}>{duracao}min </Text>
-                        <Ionicons name="ban-outline" size={16} color="#a9bcc2" />
-                        <Text style={styles.subtextoItem}>{classificacao}</Text>
+                    <View style={styles.footerFilme}>
+                        <Text style={styles.textoItem}>{genero}</Text>
+                        <View style={styles.iconTextContainer}>
+                            <Ionicons name="time-outline" size={17} color="#a9bcc2" />
+                            <Text style={styles.subtextoItem}>{duracao}min </Text>
+                            <Ionicons name="ban-outline" size={16} color="#a9bcc2" />
+                            <Text style={styles.subtextoItem}>{classificacao}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
-        </View>
+            {expanded && (
+                <View style={styles.opcoes}>
+                    <Pressable onPress={() => onEdit(id)} style={styles.botaoOpcao}>
+                        <Ionicons name="create-outline" size={24} color="#859042" />
+                        <Text style={{ color: '#859042', fontSize: 16 }}> EDITAR</Text>
+                    </Pressable>
+                    <Pressable onPress={() => onDelete(id)} style={styles.botaoOpcao}>
+                        <Ionicons name="trash-outline" size={24} color="#a96036" />
+                        <Text style={{ color: '#a96036', fontSize: 16 }}> EXCLUIR</Text>
+                    </Pressable>
+                </View>
+            )}
+        </TouchableOpacity>
     )
 }
 
@@ -49,7 +61,6 @@ const styles = StyleSheet.create({
     itemLista: {
         backgroundColor: '#121212',
         flexDirection: 'row',
-        marginBottom: 14,
         height: 90,
     },
     previewFilme: {
@@ -91,6 +102,16 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         verticalAlign: 'middle'
     },
+    opcoes: {
+        flexDirection: 'column',
+    },
+    botaoOpcao: {
+        paddingVertical: 10,
+        backgroundColor: '#121212',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    }
 });
 
 export default FilmeItem;

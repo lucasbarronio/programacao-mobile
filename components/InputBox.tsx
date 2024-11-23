@@ -4,19 +4,25 @@ type InputBoxProps = {
     label: string,
     valor: string,
     onText: (value: string) => void,
-    handleCapa?: () => void
+    handleCapa?: () => void,
+    keyType?: any
+    inputRef?: React.RefObject<TextInput>
+    onSubmit?: () => void
 }
 
-const InputBox: React.FC<InputBoxProps> = ({ label, valor, onText, handleCapa }) => {
+const InputBox: React.FC<InputBoxProps> = ({ label, valor, onText, handleCapa, keyType, inputRef, onSubmit}) => {
     return (
         <View style={styles.inputBox}>
             <Text style={styles.inputLabel}>{label}</Text>
             <TextInput
-                inputMode='text'
+                inputMode={keyType || 'text'}
                 style={styles.inputEstilo}
                 value={valor}
                 onChangeText={onText}
                 onBlur={handleCapa}
+                onSubmitEditing={onSubmit}
+                returnKeyType="next"
+                ref={inputRef}
             />
         </View>
     )
